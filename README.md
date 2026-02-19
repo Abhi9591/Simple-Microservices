@@ -151,5 +151,8 @@ docker-compose logs -f api-service
 - Clean beginner-friendly architecture
 - Ready to extend with more features
 
+## Microservices Architecture
+
+
 
 
