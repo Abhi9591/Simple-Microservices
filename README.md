@@ -153,6 +153,7 @@ docker-compose logs -f api-service
 
 ## Microservices Architecture
 
+![Microservices Architecture](https://github.com/Abhi9591/Simple-Microservices/blob/main/Screenshot%202026-02-19%20153609.png?raw=true)
 
 
 
