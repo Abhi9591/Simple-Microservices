@@ -1,0 +1,35 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment files
+.env
+
+# Docker
+*.log
+*.pid
+docker-compose.override.yml
+docker-compose.override.yaml
+**/Dockerfile.*.swp
+
+# VS Code settings
+.vscode/
+
+# MacOS files
+.DS_Store
+
+# Logs
+*.log
+
+# Pytest cache
+.pytest_cache/
+
+# Redis dump (if using persistence locally)
+dump.rdb

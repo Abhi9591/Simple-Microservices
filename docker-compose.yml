@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    networks:
+      - microservice-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - microservice-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  database-service:
+    build: ./database-service
+    container_name: database-service
+    ports:
+      - "8001:8001"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservice-net
+
+  cache-service:
+    build: ./cache-service
+    container_name: cache-service
+    ports:
+      - "8002:8002"
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - microservice-net
+
+  api-service:
+    build: ./api-service
+    container_name: api-service
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_SERVICE_URL: ${DATABASE_SERVICE_URL}
+      CACHE_SERVICE_URL: ${CACHE_SERVICE_URL}
+    depends_on:
+      - database-service
+      - cache-service
+    networks:
+      - microservice-net
+
+networks:
+  microservice-net:
+    driver: bridge
